@@ -105,6 +105,9 @@ google_analytics: "UA-58386053-1"
 # Google Tag Manager ID
 #gtm: ""
 
+# Quantcast
+quantcast: "p-R_MDU0NJY2heC"
+
 # Matomo (aka Piwik) Web statistics
 # Uncomment the following section to enable Matomo. The opt-out parameter controls
 # whether or not you want to allow users to opt out of tracking.
