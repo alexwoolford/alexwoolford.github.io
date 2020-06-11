@@ -103,7 +103,7 @@ share-links-active:
 google_analytics: "UA-58386053-1"
 
 # Google Tag Manager ID
-#gtm: ""
+gtm: "GTM-WT825H6"
 
 # Quantcast
 quantcast: "p-R_MDU0NJY2heC"
