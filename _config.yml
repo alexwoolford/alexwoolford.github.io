@@ -105,9 +105,6 @@ share-links-active:
 # Google Tag Manager ID
 gtm: "GTM-WT825H6"
 
-# Quantcast
-quantcast: "p-R_MDU0NJY2heC"
-
 # Matomo (aka Piwik) Web statistics
 # Uncomment the following section to enable Matomo. The opt-out parameter controls
 # whether or not you want to allow users to opt out of tracking.
