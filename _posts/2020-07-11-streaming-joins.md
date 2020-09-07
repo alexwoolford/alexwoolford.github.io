@@ -10,13 +10,13 @@ With a high volume of events, it's better if the lookup data is cached at the st
 
 In this article, we'll show you how to perform a stream/table join where the lookup data is sourced from a relational database: MySQL. This is illustrated in the diagram below: the raw events (blue), when enriched by the lookup table (yellow), produce enriched events (green).
 
-![stream/table join](../img/stream-table-join.png) 
+![stream/table join](../assets/img/stream-table-join.png) 
 
 The source code for this example is available in this Github repo: [confluent-healthcare-coverage-demo](https://github.com/alexwoolford/confluent-healthcare-coverage-demo).
 
 We wrote a Java Spring app that generates ailments and writes them to a Kafka topic. An ailment is a JSON record that contains a patient ID and an ailment (e.g. covid, heel-spurs, chronic xenophobia, etc...).
 
-![ailment service](../img/ailment-service.png)
+![ailment service](../assets/img/ailment-service.png)
 
 Here's output from the Kafka console consumer showing the messages from the `ailment` topic:
 
@@ -175,7 +175,7 @@ The joined data is written back to a topic, ready for consumption by other conne
 
 Here's a diagram showing the topology:
 
-![ksqlDB/Connect topology](../img/ksql-connect-topology.png)
+![ksqlDB/Connect topology](../assets/img/ksql-connect-topology.png)
 
 Note the pairs of Connect and ksqlDB nodes. That's typical for fault-tolerance.
  
