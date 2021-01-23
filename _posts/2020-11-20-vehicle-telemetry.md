@@ -8,6 +8,8 @@ It's commonplace, in a wide variety of streaming use cases, to track changes in 
 
 Kafka Streams is an abstraction on top of the producer/consumer API that allows developers to build stateful streaming applications. A stateful application has to keep track of properties over time which, in this case, are the position of buses.
 
+![Kafka Streams built on the producer/consumer API](../img/streams-built-on-producer-consumer.png)
+
 While we could simply use the consumer/producer API to read/write from Kafka, and store the store the state in a map, that doesn't handle failures. If we do this, the state is ephemeral and disappears if the application stops for whatever reason.
 
 Another alternative would be to use a streaming framework such as Spark or Flink. These technologies typically run on a dedicated cluster. Depending on the use-case, that could be overly complex and costly.
