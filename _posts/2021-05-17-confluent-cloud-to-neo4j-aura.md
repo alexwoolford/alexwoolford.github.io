@@ -203,7 +203,7 @@ Once we've confirmed that the Cypher statement creates the nodes and relationshi
         "name": "meetup-neo4j",
         "neo4j.server.uri": "neo4j+s://a806547a.databases.neo4j.io:7687",
         "neo4j.authentication.basic.username": "neo4j",
-        "neo4j.authentication.basic.password": "UL7TA19idrqR-n6X5z822jWDiq7mgNZmKuJkHD__CM4",
+        "neo4j.authentication.basic.password": "[*** Neo4j password ***]",
         "neo4j.topic.cypher.meetup-member-group-topic": "MERGE(m:MemberId {member_id: event.member_id}) MERGE(g:GroupTopicName {group_topic_name: event.group_topic_name}) MERGE(m)-[:RSVP {time: event.time}]->(g)",
         "topics": "meetup-member-group-topic",
         "value.converter": "org.apache.kafka.connect.json.JsonConverter",
@@ -240,7 +240,7 @@ Now that the data is in Neo4j, we can query the graph. For example, people who R
     WHERE g1.group_topic_name <> g2.group_topic_name
     RETURN g2.group_topic_name AS group_topic_name, COUNT(*) AS count
     ORDER BY count DESC
-    LIMIT 5
+    LIMIT 4
 
     ╒══════════════════╤═══════╕
     │"group_topic_name"│"count"│
@@ -250,8 +250,6 @@ Now that the data is in Neo4j, we can query the graph. For example, people who R
     │"Kayaking"        │5      │
     ├──────────────────┼───────┤
     │"Hiking"          │4      │
-    ├──────────────────┼───────┤
-    │"Outdoors"        │4      │
     ├──────────────────┼───────┤
     │"Adventure"       │3      │
     └──────────────────┴───────┘
