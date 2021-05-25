@@ -176,13 +176,13 @@ If something did go wrong, it's probably a typo in the `docker run` command. The
 
 Now login to [Neo4j's Aura console](https://console.neo4j.io/#/) and create a database. You'll get a connection URI, a username, and a password. Make a note of these. We'll need them to configure the connector.
 
-Create a constraint so there can only be one node per `member_id`:
+Let's create a constraint so there can only be one node per `member_id`:
 
     CREATE CONSTRAINT member_id_idx IF NOT EXISTS
     ON (m:MemberId)
     ASSERT m.member_id IS UNIQUE
 
-Similarly, create a constraint so there can only be one node per `group_topic_name`:
+Similarly, let's create a constraint so there can only be one node per `group_topic_name`:
 
     CREATE CONSTRAINT group_topic_name_idx IF NOT EXISTS
     ON (g:GroupTopicName)
@@ -192,7 +192,11 @@ Now let's craft a Cypher statement to build the graph. Each event looks like thi
 
     {"member_id": 220950091, "time": 1622851200000, "group_topic_name": "Lean Startup"}
 
-The Cypher statement creates MemberId and GroupTopicName nodes, if they don't exist, and creates an `RSVP` relationship between them, e.g.
+We then create a Cypher statement that creates the following nodes and relationship:
+
+![Arrows diagram](../img/arrows-diag.png)
+
+The Cypher statement below creates MemberId and GroupTopicName nodes, if they don't already exist. It also creates an `RSVP` relationship between the member and group topic. The relationship includes the Meetup time, in epoch millis, as a property:
 
     MERGE(m:MemberId {member_id: '220950091'})
     MERGE(g:GroupTopicName {group_topic_name: 'Lean Startup'})
