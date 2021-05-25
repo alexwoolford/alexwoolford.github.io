@@ -218,10 +218,12 @@ Once we've confirmed that the Cypher statement creates the nodes and relationshi
         "value.converter.schemas.enable": "false"
     }'
 
-There are a couple of potential "gotchas" worth noting:
+The `PUT` method allows us to overwrite the existing configs. While we could do a `POST` the `PUT` saves us time in the event that we make a typo.
 
-1) append the Bolt port number (`7687`) to the `neo4j.server.uri`
-2) append the topic name at the end of the `neo4j.topic.cypher.` property
+There are a couple of "gotchas" when configuring connector properties:
+
+1. append the Bolt port number (`7687`) to the `neo4j.server.uri`
+2. append the topic name at the end of the `neo4j.topic.cypher.` property
 
 We can confirm that the connector is running via the `status` endpoint in the Dockerized Connect instance:
 
@@ -262,4 +264,6 @@ Now that the data is in Neo4j, we can query the graph. For example, people who R
     │"Adventure"       │3      │
     └──────────────────┴───────┘
 
-The main purpose of this article was to show how we can stream events from Confluent Cloud into Neo4j Aura. I'm hopeful that this will serve as a customizable recipe.
+The purpose of this article was to show how we can stream events from Confluent Cloud into Neo4j Aura. I'm hopeful that this will serve as a customizable recipe.
+
+Managed cloud services are a lot simpler to operate than self-managed environments, and they're almost always a lot cheaper when we consider the total cost of ownership. In addition, services like these can remove a lot of risk from a project since we can evaluate ideas a lot faster.
