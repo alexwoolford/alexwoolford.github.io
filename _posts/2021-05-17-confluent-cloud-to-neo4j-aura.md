@@ -18,9 +18,9 @@ Confluent Cloud has auto-topic creation disabled. In order to produce data, we m
     Set Kafka cluster "lkc-dxgzy" as the active cluster for environment "t1630".
     % ccloud kafka topic create meetup-member-group-topic --partitions 1
 
-The topic was created with a single partition because we're not going to produce a tsunami of data since it's just an example.
+The topic was created with a single partition. We're not going to produce a tsunami of data since it's just a simple example.
 
-We can now publish some records to the topic. The Python script below streams RSVP's from the Meetup RSVP endpoint. You can take a peek at the sample data by opening this url in your browser: https://stream.meetup.com/2/rsvps.
+The Python script below streams raw RSVP's from the Meetup RSVP endpoint, parses out a meaningful subset of the data, and produces messages to the Kafka topic. You can take a peek at the raw sample data by opening this url in your browser: [stream.meetup.com/2/rsvps](https://stream.meetup.com/2/rsvps).
 
     #!/usr/bin/env python3
     from confluent_kafka import Producer
@@ -38,7 +38,7 @@ We can now publish some records to the topic. The Python script below streams RS
     
     producer = Producer(conf)
     
-    end_time = datetime.datetime.now() + datetime.timedelta(seconds=60)
+    end_time = datetime.datetime.now() + datetime.timedelta(seconds=120)
     
     url = 'https://stream.meetup.com/2/rsvps'
     with requests.get(url, stream=True) as r:
@@ -61,7 +61,9 @@ We can now publish some records to the topic. The Python script below streams RS
                     producer.produce('meetup-member-group-topic', json.dumps(record))
                     producer.flush()
 
-The stream of events in Confluent Cloud looks like this:
+The script runs for 120 seconds to avoid running up a bill. It's not necessary to write billions of nodes to the graph in order to see how the [Neo4j Kafka sink](https://www.confluent.io/hub/neo4j/kafka-connect-neo4j) works.
+
+We can take a peek at the messages produced to Confluent Cloud using the CLI:
 
     % ccloud kafka topic consume meetup-member-group-topic --from-beginning
     Starting Kafka Consumer. ^C or ^D to exit
@@ -80,23 +82,25 @@ The stream of events in Confluent Cloud looks like this:
     {"member_id": 220950091, "time": 1622851200000, "group_topic_name": "Web Technology"}
     ...
 
-This sample data shows member/group relationships for a couple of RSVP's.
+This sample data shows member/group relationships for a couple of RSVP's. The first set of events are for an outdoor Meetup, and the second group is a tech Meetup.
 
 At the time of writing (2021-05-24) there are approx. 200 connectors available in [Confluent Hub](https://www.confluent.io/hub/). We're going to write this data into a graph that's hosted on Neo4j's managed cloud service, [Aura](https://neo4j.com/cloud/aura/).
 
 ![Confluent Cloud and Neo4j Aura](../img/meetup-to-aura.png)
 
-Now that the data is being streamed into Confluent Cloud, we can setup the Dockerized Connect instance. The connectors themselves aren't included in the [confluentinc/cp-kafka-connect](https://hub.docker.com/r/confluentinc/cp-kafka-connect) image. We need to create a custom Docker container that contains the Neo4j sink connector. First, create a Dockerfile that takes the base image and installs the Neo4j sink connector:
+Now that the data is being streamed into Confluent Cloud, we can setup the Dockerized Connect instance to sink the data from Kafka to Neo4j. The connectors themselves aren't included in the [confluentinc/cp-kafka-connect](https://hub.docker.com/r/confluentinc/cp-kafka-connect) image. This is typical for containerized data pipelines. If all the connectors were bundled in the image, the Docker container would be unwieldy.
+
+We need to create a custom Docker container that contains the Neo4j sink connector. First, let's create a Dockerfile that takes the base image, and then runs a command to install the Neo4j sink connector:
 
     % cat Dockerfile 
     FROM confluentinc/cp-kafka-connect:6.1.1
     RUN confluent-hub install --no-prompt neo4j/kafka-connect-neo4j:1.0.9
 
-We build the image using the Docker build command:
+We build the image by running the `docker build` command in the same folder as the Dockerfile:
 
     docker build . -t ccloud-neo4j:1.0.0
 
-For more details, read [Confluent extending images](https://docs.confluent.io/platform/current/installation/docker/development.html#extending-images) docs.
+The `-t` argument defines the tag for our new image. For more details about creating custom connector images, see [Confluent's extending Docker images](https://docs.confluent.io/platform/current/installation/docker/development.html#extending-images).
 
 Once the Docker image has been built, you can see it in the list of local images:
 
@@ -106,13 +110,13 @@ Once the Docker image has been built, you can see it in the list of local images
     confluentinc/cp-kafka-connect-base  6.1.1   c6ffc0a95eda   3 weeks ago  1.25GB
     ...
 
-In order to run our customized Connect instance, we need:
+In order to run our customized Connect container, we need the following from Confluent Cloud:
 
 * bootstrap url
 * API key
 * API secret
 
-These can be obtained from the Confluent Cloud UI or via the CLI. We plug these values into the docker run command, e.g.
+These can be obtained from the Confluent Cloud UI or via the CLI. We plug these values into the `docker run` command, e.g.
 
     docker run -d \
       --name=kafka-connect \
@@ -146,7 +150,7 @@ These can be obtained from the Confluent Cloud UI or via the CLI. We plug these 
       -e CONNECT_LOG4J_ROOT_LOGLEVEL=INFO \
       ccloud-neo4j:1.0.0
 
-If you managed not to make any typos/errors, you'll be able interact with the Dockerized instance using the [REST API](https://docs.confluent.io/platform/current/connect/references/restapi.html). I'd recommend making calls with [httpie](https://httpie.io/). It's a bit more elegant than `curl`. We can confirm that the Neo4j sink connector has been installed:
+If you managed not to make any typos/errors, you'll be able to interact with the Dockerized instance using the [REST API](https://docs.confluent.io/platform/current/connect/references/restapi.html) on port 8083. I'd recommend making calls with [httpie](https://httpie.io/). It's a bit more elegant than `curl`. We can confirm that the Neo4j sink connector has been installed:
 
     % http localhost:8083/connector-plugins/
     [
@@ -168,7 +172,7 @@ Once you have the container ID, you can tail the logs and look for errors:
 
     docker logs -f 01f3cf781c79
 
-If something did go wrong, it's probably a typo in the `docker run` command.
+If something did go wrong, it's probably a typo in the `docker run` command. There are a lot of properties, and there are some quotes that need to be escaped in the `...SASL_JAAS_CONFIG` properties.
 
 Now login to [Neo4j's Aura console](https://console.neo4j.io/#/) and create a database. You'll get a connection URI, a username, and a password. Make a note of these. We'll need them to configure the connector.
 
