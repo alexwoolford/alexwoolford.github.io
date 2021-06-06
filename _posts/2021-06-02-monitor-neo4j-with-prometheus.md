@@ -68,6 +68,7 @@ We rebooted the instance and confirmed that the 100GB drive had been mounted:
     /dev/xvdb       100G  135M  100G   1% /var/lib/prometheus
 
 
+
 ## Ansible setup
 
 ![Ansible install](../img/ansible-install.png)
@@ -195,6 +196,8 @@ In order to access Grafana, we added another inbound rule to the security group 
 We added our Prometheus host as a datasource in Grafana. This allowed us to create a near real-time dashboard containing metrics from Neo4j and the host operating system.
 
 ## ... in closing
+
+![Prometheus gathers metrics and alerts](../img/prometheus-gathers-metrics-alerts.png)
 
 Prometheus is a powerful monitoring solution that can capture metrics from various systems, e.g. databases, messaging, storage, API's (see the Prometheus [exporters and integrations](https://prometheus.io/docs/instrumenting/exporters/) page for a complete list). The ability to visually correlate timeseries data is important for engineers who manage solutions that integrate a variety of technologies. Prometheus also provides an easy integration point for incident management services (e.g. PagerDuty, VictorOps, OpsGenie, etc.) which is considered a table stake for complex production environments.
 
