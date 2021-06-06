@@ -8,9 +8,9 @@ tags: [Neo4j, Prometheus, Grafana]
 
 Neo4j Enterprise has a built-in Prometheus endpoint that can be enabled by setting a couple of properties in `neo4j.conf`.
 
-In this article, we'll walk-through the setup of Prometheus to capture metrics from a Neo4j database, and the host it's running on. We'll also setup Grafana in order to visualize some of those metrics in a dashboard.
+In this article we'll walk-through the setup of Prometheus to capture metrics from a Neo4j database, and the host it's running on. We'll also setup Grafana in order to visualize some of those metrics in a dashboard.
 
-A compelling reason to use Prometheus/Grafana is that the Neo4j database doesn't exist in isolation. Various applications might read from and write to the Neo4j database. And the database itself runs on a Linux host, which provides CPU, RAM, disk, etc... From a dev-ops perspective, it's important that we can correlate events across systems.
+A compelling reason to use Prometheus/Grafana is that the Neo4j database doesn't exist in isolation. Various applications might read from and write to the Neo4j database. And the database itself runs on a Linux host, which provides CPU, RAM, disk, etc. From a dev-ops perspective, it's important that we can correlate events across systems.
 
 In addition, a production system will integrate with an incident management service such as [PagerDuty](https://www.pagerduty.com/), [VictorOps](https://victorops.com/), or [OpsGenie](https://www.atlassian.com/software/opsgenie). Prometheus has integrations with these solutions.
 
@@ -131,7 +131,7 @@ To install the node exporter Neo4j host we created an Ansible playbook, `prometh
       roles:
         - cloudalchemy.node_exporter
 
-When we first attempted to install the Node Exporter, we ran into an issue where "Python quit unexpectedly". A quick Google search suggested that we set the following environment variable before running the playbooks:
+When we first attempted to install the Node Exporter, we ran into an issue where "Python quit unexpectedly." A quick Google search suggested that we set the following environment variable before running the playbooks:
 
     export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
@@ -193,6 +193,6 @@ We added our Prometheus host as a datasource in Grafana. This allowed us to crea
 
 ## ... in closing
 
-Prometheus is a powerful monitoring solution that can capture metrics from various systems, e.g. databases, messaging, storage, API's (see the Prometheus [exporters and integrations](https://prometheus.io/docs/instrumenting/exporters/) page for a complete list). The ability to visually correlate timeseries data is important for engineers who manage solutions that integrate a variety of technologies. Prometheus also provides an easy integration point for incident management services (e.g. PagerDuty, VictorOps, OpsGenie, etc...) which are considered table-stakes for complex production environments.
+Prometheus is a powerful monitoring solution that can capture metrics from various systems, e.g. databases, messaging, storage, API's (see the Prometheus [exporters and integrations](https://prometheus.io/docs/instrumenting/exporters/) page for a complete list). The ability to visually correlate timeseries data is important for engineers who manage solutions that integrate a variety of technologies. Prometheus also provides an easy integration point for incident management services (e.g. PagerDuty, VictorOps, OpsGenie, etc.) which is considered a table stake for complex production environments.
 
 If you're not already using Prometheus, it's extremely robust and simple to setup with Ansible. Neo4j Enterprise's built-in endpoint makes it a breeze to start capturing those metrics.
