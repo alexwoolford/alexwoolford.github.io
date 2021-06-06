@@ -67,7 +67,10 @@ We rebooted the instance and confirmed that the 100GB drive had been mounted:
     /dev/xvda1      8.0G  1.6G  6.5G  20% /
     /dev/xvdb       100G  135M  100G   1% /var/lib/prometheus
 
+
 ## Ansible setup
+
+![Ansible install](../img/ansible-install.png)
 
 [Cloud Alchemy](https://github.com/cloudalchemy) has made production-grade Prometheus/Grafana setup very simple, via Ansible. We first install Cloud Alchemy's Ansible roles for Prometheus, the [Prometheus Node Exporter](https://github.com/prometheus/node_exporter), and Grafana on the deployment host (i.e. my laptop):
 
